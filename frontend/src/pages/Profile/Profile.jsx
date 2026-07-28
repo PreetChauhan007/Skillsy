@@ -42,35 +42,8 @@ const Profile = () => {
 };
       await updateProfile(payload);
       // Fetch latest skills and user profile after update
-      const [skillsRes, userRes] = await Promise.all([
-        api.get('/skills'),
-        api.get('/users/profile'),
-      ]);
-      const skillsList = skillsRes.data.skills || [];
-      if (userRes.data && userRes.data.data) {
-        // Map skill IDs or objects to skill objects from latest skills list
-        const offeredRaw = userRes.data.data.skillsOffered || [];
-        const wantedRaw = userRes.data.data.skillsWanted || [];
-        const offeredObjs = offeredRaw.map(item => {
-          if (item && item.name) return item; // already a skill object
-          const found = skillsList.find(s => s._id === (item._id || item));
-          return found || { _id: item._id || item, name: 'Unknown Skill' };
-        });
-        const wantedObjs = wantedRaw.map(item => {
-          if (item && item.name) return item;
-          const found = skillsList.find(s => s._id === (item._id || item));
-          return found || { _id: item._id || item, name: 'Unknown Skill' };
-        });
-        setAllSkills(skillsList);
-        setFormData({
-          name: userRes.data.data.name,
-          location: userRes.data.data.location || '',
-          availability: userRes.data.data.availability,
-          isPublic: userRes.data.data.isPublic,
-          skillsOffered: offeredObjs,
-          skillsWanted: wantedObjs,
-        });
-      }
+      
+      
       setIsEditing(false);
     } catch (error) {
       // Error is handled in the context
