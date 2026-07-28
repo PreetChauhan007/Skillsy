@@ -35,11 +35,11 @@ const Profile = () => {
     setLoading(true);
     try {
       // Only send skill IDs to backend
-      const payload = {
-        ...formData,
-        skillsOffered: formData.skillsOffered.map(s => s._id),
-        skillsWanted: formData.skillsWanted.map(s => s._id),
-      };
+     const payload = {
+  ...formData,
+  skillsOffered: formData.skillsOffered,
+  skillsWanted: formData.skillsWanted,
+};
       await updateProfile(payload);
       // Fetch latest skills and user profile after update
       const [skillsRes, userRes] = await Promise.all([
