@@ -2,7 +2,8 @@ import axios from 'axios';
 
 // Keep the existing deployed API for authentication and all REST requests.
 const API_BASE_URL = 'https://skillsy-696t.onrender.com/api';
-export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || API_BASE_URL.replace(/\/api\/?$/, '');
+// Use the same Render deployment as the REST API so an old Vercel variable cannot break chat.
+export const SOCKET_URL = API_BASE_URL.replace(/\/api\/?$/, '');
 
 const api = axios.create({
   baseURL: API_BASE_URL,

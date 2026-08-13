@@ -13,13 +13,9 @@ const PORT = process.env.PORT || 5000;
 connectDB()
 .then(()=>{
     const server = http.createServer(app);
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'https://skillsy-delta.vercel.app',
-      process.env.FRONTEND_URL,
-    ].filter(Boolean);
     const io = new Server(server, {
-      cors: { origin: allowedOrigins, credentials: true },
+      // Socket connections are authenticated with a JWT in the handshake.
+      cors: { origin: true, credentials: true },
     });
     setIO(io);
 
