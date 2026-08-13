@@ -17,7 +17,7 @@ const Chat = () => {
   const loadConversation = async (showError = false) => {
     try {
       const response = await chatAPI.getConversation(swapId);
-      setMessages(response.data.data.messages || []);
+      setMessages(Array.isArray(response.data.data?.messages) ? response.data.data.messages : []);
     } catch (error) {
       if (showError) toast.error(error.response?.data?.message || 'Unable to load chat');
     } finally {
@@ -39,7 +39,8 @@ const Chat = () => {
     setSending(true);
     try {
       const response = await chatAPI.sendMessage(swapId, text.trim());
-      setMessages((current) => [...current, response.data.data]);
+      const message = response.data.data;
+      if (message?._id) setMessages((current) => [...current, message]);
       setText('');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Message could not be sent');
@@ -62,14 +63,14 @@ const Chat = () => {
         </div>
         <div className="flex-1 space-y-3 overflow-y-auto p-4">
           {messages.length === 0 && <p className="py-10 text-center text-neutral-400">Start the conversation. You can share your email, phone number, or meeting link here.</p>}
-          {messages.map((message) => {
+          {messages.filter(Boolean).map((message) => {
             const mine = (message.sender?._id || message.sender) === (user?._id || user?.id);
             return (
               <div key={message._id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${mine ? 'bg-emerald-600 text-white' : 'bg-neutral-800 text-neutral-100'}`}>
                   {!mine && <p className="mb-1 text-xs font-semibold text-emerald-400">{message.sender?.name || 'Swap partner'}</p>}
                   <p className="whitespace-pre-wrap break-words">{message.content}</p>
-                  <p className={`mt-1 text-right text-xs ${mine ? 'text-emerald-100' : 'text-neutral-500'}`}>{new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                  <p className={`mt-1 text-right text-xs ${mine ? 'text-emerald-100' : 'text-neutral-500'}`}>{message.createdAt ? new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</p>
                 </div>
               </div>
             );

@@ -35,7 +35,8 @@ export const sendMessage = async (req, res) => {
       { $setOnInsert: { participants }, $push: { messages: { sender: req.user.id, content } } },
       { new: true, upsert: true }
     ).populate('messages.sender', 'name profilePhoto');
-    return successResponse(res, conversation.messages.at(-1), 'Message sent', 201);
+    const message = conversation.messages[conversation.messages.length - 1];
+    return successResponse(res, message, 'Message sent', 201);
   } catch (error) {
     return errorResponse(res, error, error.message.includes('participant') ? 403 : 400);
   }
