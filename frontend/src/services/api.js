@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// Vercel builds need a public backend fallback; VITE_API_URL still overrides this per environment.
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://skillsy-696t.onrender.com/api';
 export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || API_BASE_URL.replace(/\/api\/?$/, '');
 
 const api = axios.create({
