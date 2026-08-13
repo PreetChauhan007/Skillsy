@@ -125,8 +125,8 @@ const Profile = () => {
     <div className="min-h-screen bg-neutral-950">
       <div className="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="bg-neutral-900 shadow-xl rounded-2xl border border-neutral-800">
-          <div className="px-8 py-8">
-            <div className="flex items-center justify-between mb-8">
+          <div className="px-5 py-6 sm:px-8 sm:py-8">
+            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <h1 className="text-3xl font-extrabold text-white tracking-tight">Profile</h1>
               {!isEditing ? (
                 <button
@@ -157,7 +157,7 @@ const Profile = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[22rem_minmax(0,1fr)]">
               {/* Profile Info */}
               <div className="min-w-0 lg:col-span-1">
                 <div className="overflow-hidden bg-neutral-800 rounded-2xl p-8 shadow border border-neutral-700">
@@ -261,7 +261,7 @@ const Profile = () => {
               </div>
 
               {/* Skills */}
-              <div className="lg:col-span-2 space-y-6">
+              <div className="min-w-0 space-y-6">
                 {/* Skills Offered */}
                 <div className="bg-neutral-900 rounded-2xl p-6 border border-neutral-800 shadow-lg">
                   <h3 className="text-lg font-semibold text-white mb-4">Skills I Offer</h3>
