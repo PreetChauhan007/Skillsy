@@ -40,12 +40,7 @@ const Chat = () => {
     socketRef.current = socket;
     socket.on('connect', () => socket.emit('join-swap', swapId));
     socket.on('chat:message', addMessage);
-    // Fallback: messages still appear if a browser/network blocks WebSockets.
-    const refresh = setInterval(() => loadConversation(false), 3000);
-    return () => {
-      clearInterval(refresh);
-      socket.disconnect();
-    };
+    return () => socket.disconnect();
   }, [swapId]);
 
   useEffect(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), [messages]);
