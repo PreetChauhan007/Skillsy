@@ -11,6 +11,18 @@ const getAcceptedSwapForParticipant = async (swapId, userId) => {
   return swap;
 };
 
+const serializeMessage = (message) => {
+  const sender = message.sender?.toObject ? message.sender.toObject({ virtuals: false }) : message.sender;
+  return {
+    _id: String(message._id),
+    sender: sender && typeof sender === 'object'
+      ? { _id: String(sender._id), name: sender.name || 'Swap partner', profilePhoto: sender.profilePhoto || null }
+      : String(sender),
+    content: message.content,
+    createdAt: message.createdAt ? new Date(message.createdAt).toISOString() : new Date().toISOString(),
+  };
+};
+
 export const getConversation = async (req, res) => {
   try {
     const swap = await getAcceptedSwapForParticipant(req.params.swapId, req.user.id);
@@ -40,8 +52,9 @@ export const sendMessage = async (req, res) => {
     const storedMessages = conversation?.messages || [];
     const message = storedMessages[storedMessages.length - 1];
     if (!message) throw new Error('Message could not be saved');
-    getIO()?.to(`swap:${swap._id}`).emit('chat:message', message.toObject());
-    return successResponse(res, message, 'Message sent', 201);
+    const messagePayload = serializeMessage(message);
+    getIO()?.to(`swap:${swap._id}`).emit('chat:message', messagePayload);
+    return successResponse(res, messagePayload, 'Message sent', 201);
   } catch (error) {
     return errorResponse(res, error, error.message.includes('participant') ? 403 : 400);
   }
