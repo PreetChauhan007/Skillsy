@@ -33,8 +33,9 @@ connectDB()
     io.on('connection', (socket) => {
       socket.on('join-swap', async (swapId) => {
         const swap = await SwapRequest.findById(swapId);
-        const isParticipant = swap && [swap.requesterId, swap.targetUserId].includes(socket.userId);
-        if (swap?.status === 'accepted' && isParticipant) socket.join(`swap:${swapId}`);
+        const participantIds = [swap?.requesterId, swap?.targetUserId].map((id) => String(id));
+        const isParticipant = swap && participantIds.includes(String(socket.userId));
+        if (swap?.status === 'accepted' && isParticipant) socket.join(`swap:${swap._id.toString()}`);
       });
     });
 

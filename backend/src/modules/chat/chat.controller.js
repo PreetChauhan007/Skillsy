@@ -6,7 +6,8 @@ import { getIO } from '../../config/socket.js';
 const getAcceptedSwapForParticipant = async (swapId, userId) => {
   const swap = await SwapRequest.findById(swapId);
   if (!swap || swap.status !== 'accepted') throw new Error('Chat is available only for accepted swaps');
-  if (![swap.requesterId, swap.targetUserId].includes(userId)) throw new Error('You are not a participant in this swap');
+  const participantIds = [swap.requesterId, swap.targetUserId].map((id) => String(id));
+  if (!participantIds.includes(String(userId))) throw new Error('You are not a participant in this swap');
   return swap;
 };
 

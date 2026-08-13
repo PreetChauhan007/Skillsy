@@ -53,12 +53,15 @@ const Chat = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!text.trim() || sending) return;
+    const content = text.trim();
+    // The socket broadcast can arrive before the HTTP response. Clear immediately so
+    // a successfully saved message never remains in the compose box.
+    setText('');
     setSending(true);
     try {
-      const response = await chatAPI.sendMessage(swapId, text.trim());
+      const response = await chatAPI.sendMessage(swapId, content);
       const message = response.data.data;
       addMessage(message);
-      setText('');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Message could not be sent');
     } finally {
