@@ -1,6 +1,7 @@
 import Conversation from './chat.model.js';
 import SwapRequest from '../swap/swap.model.js';
 import { successResponse, errorResponse } from '../../utils/response.js';
+import { getIO } from '../../config/socket.js';
 
 const getAcceptedSwapForParticipant = async (swapId, userId) => {
   const swap = await SwapRequest.findById(swapId);
@@ -36,6 +37,7 @@ export const sendMessage = async (req, res) => {
       { new: true, upsert: true }
     ).populate('messages.sender', 'name profilePhoto');
     const message = conversation.messages[conversation.messages.length - 1];
+    getIO()?.to(`swap:${swap._id}`).emit('chat:message', message.toObject());
     return successResponse(res, message, 'Message sent', 201);
   } catch (error) {
     return errorResponse(res, error, error.message.includes('participant') ? 403 : 400);

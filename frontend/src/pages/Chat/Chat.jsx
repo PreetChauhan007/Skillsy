@@ -4,6 +4,8 @@ import { ArrowLeft, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { chatAPI } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { io } from 'socket.io-client';
+import { SOCKET_URL } from '../../services/api';
 
 const Chat = () => {
   const { swapId } = useParams();
@@ -13,6 +15,12 @@ const Chat = () => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const bottomRef = useRef(null);
+  const socketRef = useRef(null);
+
+  const addMessage = (message) => {
+    if (!message?._id) return;
+    setMessages((current) => current.some((item) => item?._id === message._id) ? current : [...current, message]);
+  };
 
   const loadConversation = async (showError = false) => {
     try {
@@ -27,8 +35,12 @@ const Chat = () => {
 
   useEffect(() => {
     loadConversation(true);
-    const interval = setInterval(() => loadConversation(false), 5000);
-    return () => clearInterval(interval);
+    const token = localStorage.getItem('token');
+    const socket = io(SOCKET_URL, { auth: { token } });
+    socketRef.current = socket;
+    socket.on('connect', () => socket.emit('join-swap', swapId));
+    socket.on('chat:message', addMessage);
+    return () => socket.disconnect();
   }, [swapId]);
 
   useEffect(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), [messages]);
@@ -40,7 +52,7 @@ const Chat = () => {
     try {
       const response = await chatAPI.sendMessage(swapId, text.trim());
       const message = response.data.data;
-      if (message?._id) setMessages((current) => [...current, message]);
+      addMessage(message);
       setText('');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Message could not be sent');

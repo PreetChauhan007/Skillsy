@@ -7,10 +7,11 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin:[
+    origin: [
       "http://localhost:5173",
-        "https://skillsy-delta.vercel.app"
-     ], // Use environment variable or default to '*'
+      "https://skillsy-delta.vercel.app",
+      process.env.FRONTEND_URL,
+    ].filter(Boolean),
     credentials: true
 }));
 app.use(helmet());
