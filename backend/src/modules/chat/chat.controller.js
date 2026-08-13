@@ -27,7 +27,7 @@ export const getConversation = async (req, res) => {
 
 export const sendMessage = async (req, res) => {
   try {
-    const content = req.body.content?.trim();
+    const content = typeof req.body?.content === 'string' ? req.body.content.trim() : '';
     if (!content) return errorResponse(res, 'Message cannot be empty', 400);
     const swap = await getAcceptedSwapForParticipant(req.params.swapId, req.user.id);
     const participants = [swap.requesterId, swap.targetUserId];
@@ -36,7 +36,9 @@ export const sendMessage = async (req, res) => {
       { $setOnInsert: { participants }, $push: { messages: { sender: req.user.id, content } } },
       { new: true, upsert: true }
     ).populate('messages.sender', 'name profilePhoto');
-    const message = conversation.messages[conversation.messages.length - 1];
+    const storedMessages = conversation?.messages || [];
+    const message = storedMessages[storedMessages.length - 1];
+    if (!message) throw new Error('Message could not be saved');
     getIO()?.to(`swap:${swap._id}`).emit('chat:message', message.toObject());
     return successResponse(res, message, 'Message sent', 201);
   } catch (error) {
