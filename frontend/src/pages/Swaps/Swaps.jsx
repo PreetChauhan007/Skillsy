@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { swapsAPI, feedbackAPI } from '../../services/api';
 import { Clock, CheckCircle, XCircle, MessageCircle, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const Swaps = () => {
   const [activeTab, setActiveTab] = useState('received');
@@ -11,6 +12,7 @@ const Swaps = () => {
   const [selectedSwap, setSelectedSwap] = useState(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const {user} = useAuth();
+  const navigate = useNavigate();
   const [feedbackForm, setFeedbackForm] = useState({
     rating: 5,
     comment: '',
@@ -199,16 +201,25 @@ const handleFeedbackSubmit = async () => {
                       )}
 
                       {swap.status === 'accepted' && (
-                        <button
-                          onClick={() => {
-                            setSelectedSwap(swap);
-                            setShowFeedbackModal(true);
-                          }}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm flex items-center"
-                        >
-                          <Star className="h-4 w-4 mr-2" />
-                          Complete & Rate
-                        </button>
+                        <>
+                          <button
+                            onClick={() => navigate(`/chat/${swap._id}`)}
+                            className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm flex items-center"
+                          >
+                            <MessageCircle className="h-4 w-4 mr-2" />
+                            Chat
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedSwap(swap);
+                              setShowFeedbackModal(true);
+                            }}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm flex items-center"
+                          >
+                            <Star className="h-4 w-4 mr-2" />
+                            Complete & Rate
+                          </button>
+                        </>
                       )}
 
                       {activeTab === 'sent' && swap.status === 'pending' && (

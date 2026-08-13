@@ -12,6 +12,7 @@ import Browse from './pages/Browse/Browse';
 // import Swaps from './pages/Swaps/Swaps';
 import Admin from './pages/Admin/Admin';
 import Swaps from './pages/Swaps/Swaps.jsx';
+import Chat from './pages/Chat/Chat.jsx';
 
 function App() {
   return (
@@ -53,6 +54,10 @@ function App() {
                   <Swaps />
                 </ProtectedRoute>
               }
+            />
+            <Route
+              path="chat/:swapId"
+              element={<ProtectedRoute><Chat /></ProtectedRoute>}
             />
             <Route
               path="admin"

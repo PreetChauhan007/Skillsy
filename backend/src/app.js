@@ -26,6 +26,7 @@ import { skillRoutes } from './modules/skill/index.js';
 import { swapRoutes } from './modules/swap/index.js';
 import { adminRoutes } from './modules/admin/index.js';
 import { feedbackRoutes } from './modules/feedback/index.js';
+import { chatRoutes } from './modules/chat/index.js';
 
 
 // User routes (frontend expects /users/*)
@@ -42,5 +43,8 @@ app.use('/api/admin', adminRoutes);
 
 // Feedback routes
 app.use('/api/feedback', feedbackRoutes);
+
+// Private conversations for accepted swaps
+app.use('/api/chats', chatRoutes);
 
 export default app;

@@ -62,6 +62,11 @@ export const feedbackAPI = {
   getAllFeedback: () => api.get('/feedback'),
 };
 
+export const chatAPI = {
+  getConversation: (swapId) => api.get(`/chats/${swapId}`),
+  sendMessage: (swapId, content) => api.post(`/chats/${swapId}/messages`, { content }),
+};
+
 // Admin API
 export const adminAPI = {
   banUser: (userId, reason = 'Banned by admin') => api.patch(`/admin/ban-user/${userId}`, { reason }),
