@@ -32,10 +32,15 @@ connectDB()
 
     io.on('connection', (socket) => {
       socket.on('join-swap', async (swapId) => {
-        const swap = await SwapRequest.findById(swapId);
-        const participantIds = [swap?.requesterId, swap?.targetUserId].map((id) => String(id));
-        const isParticipant = swap && participantIds.includes(String(socket.userId));
-        if (swap?.status === 'accepted' && isParticipant) socket.join(`swap:${swap._id.toString()}`);
+        try {
+          if (typeof swapId !== 'string' || !/^[a-fA-F0-9]{24}$/.test(swapId)) return;
+          const swap = await SwapRequest.findById(swapId);
+          const participantIds = [swap?.requesterId, swap?.targetUserId].map((id) => String(id));
+          const isParticipant = swap && participantIds.includes(String(socket.userId));
+          if (swap?.status === 'accepted' && isParticipant) socket.join(`swap:${swap._id.toString()}`);
+        } catch (error) {
+          console.error('Unable to join chat room:', error.message);
+        }
       });
     });
 

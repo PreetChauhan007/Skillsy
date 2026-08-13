@@ -1,9 +1,11 @@
 import Conversation from './chat.model.js';
+import mongoose from 'mongoose';
 import SwapRequest from '../swap/swap.model.js';
 import { successResponse, errorResponse } from '../../utils/response.js';
 import { getIO } from '../../config/socket.js';
 
 const getAcceptedSwapForParticipant = async (swapId, userId) => {
+  if (!mongoose.isValidObjectId(swapId)) throw new Error('Invalid swap ID');
   const swap = await SwapRequest.findById(swapId);
   if (!swap || swap.status !== 'accepted') throw new Error('Chat is available only for accepted swaps');
   const participantIds = [swap.requesterId, swap.targetUserId].map((id) => String(id));
@@ -32,7 +34,9 @@ export const getConversation = async (req, res) => {
       { $setOnInsert: { participants } },
       { new: true, upsert: true }
     ).populate('messages.sender', 'name profilePhoto createdAt');
-    return successResponse(res, conversation);
+    // Return a bounded, recent history so an old chat cannot overwhelm the browser.
+    const messages = conversation.messages.slice(-100).map(serializeMessage);
+    return successResponse(res, { swapRequest: String(swap._id), messages });
   } catch (error) {
     return errorResponse(res, error, error.message.includes('participant') ? 403 : 400);
   }
@@ -42,11 +46,16 @@ export const sendMessage = async (req, res) => {
   try {
     const content = typeof req.body?.content === 'string' ? req.body.content.trim() : '';
     if (!content) return errorResponse(res, 'Message cannot be empty', 400);
+    if (content.length > 2000) return errorResponse(res, 'Message cannot exceed 2000 characters', 400);
     const swap = await getAcceptedSwapForParticipant(req.params.swapId, req.user.id);
     const participants = [swap.requesterId, swap.targetUserId];
     const conversation = await Conversation.findOneAndUpdate(
       { swapRequest: swap._id },
-      { $setOnInsert: { participants }, $push: { messages: { sender: req.user.id, content } } },
+      {
+        $setOnInsert: { participants },
+        // Retain enough context while keeping the embedded document safely bounded.
+        $push: { messages: { $each: [{ sender: req.user.id, content }], $slice: -1000 } },
+      },
       { new: true, upsert: true }
     ).populate('messages.sender', 'name profilePhoto createdAt');
     const storedMessages = conversation?.messages || [];
