@@ -19,7 +19,7 @@ export const getConversation = async (req, res) => {
       { swapRequest: swap._id },
       { $setOnInsert: { participants } },
       { new: true, upsert: true }
-    ).populate('messages.sender', 'name profilePhoto');
+    ).populate('messages.sender', 'name profilePhoto createdAt');
     return successResponse(res, conversation);
   } catch (error) {
     return errorResponse(res, error, error.message.includes('participant') ? 403 : 400);
@@ -36,7 +36,7 @@ export const sendMessage = async (req, res) => {
       { swapRequest: swap._id },
       { $setOnInsert: { participants }, $push: { messages: { sender: req.user.id, content } } },
       { new: true, upsert: true }
-    ).populate('messages.sender', 'name profilePhoto');
+    ).populate('messages.sender', 'name profilePhoto createdAt');
     const storedMessages = conversation?.messages || [];
     const message = storedMessages[storedMessages.length - 1];
     if (!message) throw new Error('Message could not be saved');

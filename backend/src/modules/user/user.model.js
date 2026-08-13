@@ -30,7 +30,7 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 
 // Virtual for joinedDate
 userSchema.virtual('joinedDate').get(function () {
-  return this.createdAt.toISOString().split('T')[0];
+  return this.createdAt ? this.createdAt.toISOString().split('T')[0] : null;
 });
 
 // Ensure virtuals are serialized
