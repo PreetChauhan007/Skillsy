@@ -16,7 +16,7 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      return <main className="flex min-h-screen items-center justify-center bg-neutral-950 p-6 text-center text-white"><div><h1 className="text-2xl font-bold">Something went wrong</h1><p className="mt-2 text-neutral-400">Your data is safe. Please reload the page and try again.</p><button className="mt-5 rounded-lg bg-emerald-600 px-4 py-2" onClick={() => window.location.reload()}>Reload page</button></div></main>;
+      return <main className="flex min-h-screen items-center justify-center bg-neutral-950 p-6 text-center text-white"><div><h1 className="text-2xl font-bold">Chat could not be displayed</h1><p className="mt-2 text-neutral-400">Please return to your swaps and open this chat again.</p><a className="mt-5 inline-block rounded-lg bg-emerald-600 px-4 py-2" href="/swaps">Back to swaps</a></div></main>;
     }
     return this.props.children;
   }

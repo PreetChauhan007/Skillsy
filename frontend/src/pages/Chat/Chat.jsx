@@ -4,8 +4,14 @@ import { ArrowLeft, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { chatAPI } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
+import ErrorBoundary from '../../components/ErrorBoundary';
 
-const Chat = () => {
+const displayText = (value) => {
+  if (typeof value === 'string' || typeof value === 'number') return String(value);
+  return '';
+};
+
+const ChatContent = () => {
   const { swapId } = useParams();
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
@@ -54,7 +60,13 @@ const Chat = () => {
     };
   }, [swapId]);
 
-  useEffect(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), [messages]);
+  useEffect(() => {
+    try {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    } catch {
+      // Scrolling is optional; a browser limitation must never interrupt chat rendering.
+    }
+  }, [messages]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -92,8 +104,8 @@ const Chat = () => {
           {messages.filter(Boolean).map((message) => {
             const mine = String(message.sender?._id || message.sender) === String(user?._id || user?.id);
             return <div key={message._id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[80%] rounded-2xl px-4 py-3 ${mine ? 'bg-emerald-600 text-white' : 'bg-neutral-800 text-neutral-100'}`}>
-              {!mine && <p className="mb-1 text-xs font-semibold text-emerald-400">{message.sender?.name || 'Swap partner'}</p>}
-              <p className="whitespace-pre-wrap break-words">{message.content}</p><p className={`mt-1 text-right text-xs ${mine ? 'text-emerald-100' : 'text-neutral-500'}`}>{formatTime(message.createdAt)}</p>
+              {!mine && <p className="mb-1 text-xs font-semibold text-emerald-400">{displayText(message.sender?.name) || 'Swap partner'}</p>}
+              <p className="whitespace-pre-wrap break-words">{displayText(message.content)}</p><p className={`mt-1 text-right text-xs ${mine ? 'text-emerald-100' : 'text-neutral-500'}`}>{formatTime(message.createdAt)}</p>
             </div></div>;
           })}
           <div ref={bottomRef} />
@@ -106,5 +118,7 @@ const Chat = () => {
     </div>
   );
 };
+
+const Chat = () => <ErrorBoundary><ChatContent /></ErrorBoundary>;
 
 export default Chat;

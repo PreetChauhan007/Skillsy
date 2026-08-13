@@ -13,11 +13,9 @@ import Browse from './pages/Browse/Browse';
 import Admin from './pages/Admin/Admin';
 import Swaps from './pages/Swaps/Swaps.jsx';
 import Chat from './pages/Chat/Chat.jsx';
-import ErrorBoundary from './components/ErrorBoundary.jsx';
 
 function App() {
   return (
-    <ErrorBoundary>
     <Router>
       <AuthProvider>
         <Routes>
@@ -73,7 +71,6 @@ function App() {
         </Routes>
       </AuthProvider>
     </Router>
-    </ErrorBoundary>
   );
 }
 
