@@ -159,8 +159,8 @@ const Profile = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Profile Info */}
-              <div className="lg:col-span-1">
-                <div className="bg-neutral-800 rounded-2xl p-8 shadow border border-neutral-700">
+              <div className="min-w-0 lg:col-span-1">
+                <div className="overflow-hidden bg-neutral-800 rounded-2xl p-8 shadow border border-neutral-700">
                   <div className="text-center">
                     <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                       <span className="text-white text-3xl font-extrabold">
@@ -177,7 +177,7 @@ const Profile = () => {
                     ) : (
                       <h2 className="text-2xl font-bold text-white">{user.name}</h2>
                     )}
-                    <p className="text-gray-400 mt-1">{user.email}</p>
+                    <p className="mt-1 w-full break-all text-gray-400" title={user.email}>{user.email}</p>
                   </div>
 
                   <div className="mt-6 space-y-4">
@@ -197,9 +197,9 @@ const Profile = () => {
                             />
                           </div>
                         ) : (
-                          <span className="flex items-center bg-neutral-900 rounded-full px-4 py-2 border border-emerald-700 shadow-sm text-white font-medium">
+                          <span className="flex max-w-full items-center bg-neutral-900 rounded-full px-4 py-2 border border-emerald-700 shadow-sm text-white font-medium">
                             <MapPin className="h-5 w-5 text-emerald-400 mr-2" />
-                            {user.location || 'No location set'}
+                            <span className="min-w-0 break-words">{user.location || 'No location set'}</span>
                           </span>
                         )}
                       </div>
