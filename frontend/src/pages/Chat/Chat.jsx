@@ -4,8 +4,6 @@ import { ArrowLeft, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { chatAPI } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
-import { io } from 'socket.io-client';
-import { SOCKET_URL } from '../../services/api';
 
 const Chat = () => {
   const { swapId } = useParams();
@@ -15,7 +13,6 @@ const Chat = () => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const bottomRef = useRef(null);
-  const socketRef = useRef(null);
 
   const addMessage = (message) => {
     if (!message?._id) return;
@@ -35,12 +32,9 @@ const Chat = () => {
 
   useEffect(() => {
     loadConversation(true);
-    const token = localStorage.getItem('token');
-    const socket = io(SOCKET_URL, { auth: { token } });
-    socketRef.current = socket;
-    socket.on('connect', () => socket.emit('join-swap', swapId));
-    socket.on('chat:message', addMessage);
-    return () => socket.disconnect();
+    // Stable near-real-time sync for both chat participants.
+    const refresh = setInterval(() => loadConversation(false), 1000);
+    return () => clearInterval(refresh);
   }, [swapId]);
 
   useEffect(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), [messages]);
